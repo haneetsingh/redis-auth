@@ -16,8 +16,8 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 // Index route
-app.get('/', (_req, res) => {
-  res.sendFile(path.join(path.resolve('./'), 'public/index.html'));
+app.get("/", (_req, res) => {
+  res.sendFile(path.join(path.resolve("./"), "public/index.html"));
 });
 
 // Auth routes

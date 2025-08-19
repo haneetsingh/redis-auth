@@ -6,16 +6,16 @@ import { registerUser, authenticateUser } from "../services/auth.service";
 import { rateLimiterMiddleware } from "../middleware/rate-limiter.middleware";
 
 const router = Router();
-const authBodySchema = z.preprocess(
-  (val) => (val === undefined ? {} : val),
-  z.strictObject({
-    username: usernameSchema.transform((s) => s.toLowerCase()),
-    password: passwordSchema,
-  })
-);
 
 router.post("/register", rateLimiterMiddleware, async (req: Request, res: Response) => {
-  const parsed = authBodySchema.safeParse(req.body);
+  const registerBodySchema = z.preprocess(
+    (val) => (val === undefined ? {} : val),
+    z.strictObject({
+      username: usernameSchema.transform((s) => s.toLowerCase()),
+      password: passwordSchema,
+    })
+  );
+  const parsed = registerBodySchema.safeParse(req.body);
 
   if (!parsed.success) {
     return res.status(400).json({
@@ -43,13 +43,18 @@ router.post("/register", rateLimiterMiddleware, async (req: Request, res: Respon
 
 
 router.post("/login", rateLimiterMiddleware, async (req: Request, res: Response) => {
-  const parsed = authBodySchema.safeParse(req.body);
+  const loginBodySchema = z.preprocess(
+    (val) => (val === undefined ? {} : val),
+    z.strictObject({
+      username: usernameSchema.transform((s) => s.toLowerCase()),
+      password: z.string(),
+    })
+  );
+
+  const parsed = loginBodySchema.safeParse(req.body);
 
   if (!parsed.success) {
-    return res.status(400).json({
-      error: "Invalid request",
-      details: formatZodError(parsed.error),
-    });
+    return res.status(401).json({ error: "Invalid username or password" });
   }
 
   const { username, password } = parsed.data;

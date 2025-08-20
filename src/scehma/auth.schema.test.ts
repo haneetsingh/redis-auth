@@ -22,7 +22,7 @@ describe("Auth Schema Validation", () => {
 
     it("should reject usernames that are too short", () => {
       const shortUsernames = ["", "a", "ab"];
-      
+
       shortUsernames.forEach(username => {
         const result = usernameSchema.safeParse(username);
         expect(result.success).toBe(false);
@@ -109,61 +109,48 @@ describe("Auth Schema Validation", () => {
     });
 
     it("should reject passwords that are too short", () => {
-      const shortPasswords = ["", "123", "abc", "Test1"];
-      
+      const shortPasswords = ["", "123", "abc", "Test1", "1234567"];
+
       shortPasswords.forEach(password => {
         const result = passwordSchema.safeParse(password);
         expect(result.success).toBe(false);
         if (!result.success) {
-          // Empty string gets "Password is required", others get "Password must be at least 6 characters"
-          const expectedMessage = password === "" ? "Password is required" : "Password must be at least 6 characters";
+          const expectedMessage = password === "" ? "Password is required" : "Password must be at least 8 characters";
           expect(result.error.issues[0].message).toBe(expectedMessage);
         }
       });
     });
 
-    it("should reject passwords without lowercase letters", () => {
-      const result = passwordSchema.safeParse("TEST123!");
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues[0].message).toBe("Password must contain at least one lowercase letter");
-      }
+    it("should accept passwords without complexity requirements (handled by OWASP)", () => {
+      const passwords = ["TEST1234!", "test1234!", "TestPass!", "TestPass123"];
+
+      passwords.forEach(password => {
+        const result = passwordSchema.safeParse(password);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.data).toBe(password);
+        }
+      });
     });
 
-    it("should reject passwords without uppercase letters", () => {
-      const result = passwordSchema.safeParse("test123!");
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues[0].message).toBe("Password must contain at least one uppercase letter");
-      }
-    });
-
-    it("should reject passwords without numbers", () => {
-      const result = passwordSchema.safeParse("TestPass!");
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues[0].message).toBe("Password must contain at least one number");
-      }
-    });
-
-    it("should reject passwords without special characters", () => {
-      const result = passwordSchema.safeParse("TestPass123");
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues[0].message).toBe("Password must contain at least one special character");
-      }
-    });
-
-    it("should reject passwords with spaces", () => {
+    it("should accept passwords with spaces (OWASP handles space validation)", () => {
       const result = passwordSchema.safeParse("Test Pass 123!");
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toBe("Test Pass 123!");
+      }
+    });
+
+    it("should reject passwords that exceed maximum length", () => {
+      const longPassword = "a".repeat(129);
+      const result = passwordSchema.safeParse(longPassword);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe("Password cannot contain spaces");
+        expect(result.error.issues[0].message).toBe("Password cannot exceed 128 characters");
       }
     });
 
     it("should handle preprocessing correctly", () => {
-      // Test that undefined becomes empty string
       const result = passwordSchema.safeParse(undefined);
       expect(result.success).toBe(false);
       if (!result.success) {

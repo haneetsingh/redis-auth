@@ -6,7 +6,7 @@ import { passwordSchema } from "../scehma/auth.schema";
 owasp.config({
   allowPassphrases: true,
   maxLength: 128,
-  minLength: 6,
+  minLength: 8,
   minPhraseLength: 20,
   minOptionalTestsToPass: 4,
 });

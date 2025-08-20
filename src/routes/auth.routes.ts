@@ -19,6 +19,7 @@ router.post("/register", rateLimiterMiddleware, async (req: Request, res: Respon
 
   if (!parsed.success) {
     return res.status(400).json({
+      ok: false,
       error: "Invalid request",
       details: formatZodError(parsed.error),
     });
@@ -29,6 +30,7 @@ router.post("/register", rateLimiterMiddleware, async (req: Request, res: Respon
 
   if (!result.ok) {
     return res.status(409).json({
+      ok: false,
       error: result.error,
       details: result.details || {},
     });
@@ -54,17 +56,47 @@ router.post("/login", rateLimiterMiddleware, async (req: Request, res: Response)
   const parsed = loginBodySchema.safeParse(req.body);
 
   if (!parsed.success) {
-    return res.status(401).json({ error: "Invalid username or password" });
+    return res.status(401).json({
+      ok: false,
+      error: "Invalid username or password",
+    });
   }
 
   const { username, password } = parsed.data;
   const result = await authenticateUser(username, password);
 
   if (!result.ok) {
-    return res.status(401).json({ error: result.error });
+    return res.status(401).json({
+      ok: false,
+      error: result.error,
+    });
   }
 
-  return res.status(200).json({ authenticated: true, username });
+  /*
+  * TODO: Issue JWT token here in the future
+  * const token = generateJWT({ username: result.username, roles: result.roles });
+  * Return the token in the response body or as an HTTP-only cookie
+  */
+
+  /*
+  * TODO: Check password expiry and notify user if password is expired or near expiry
+  * const expiryInfo = checkPasswordExpiry(user);
+  * Return appropriate warnings or force password change if expired
+  */
+
+  return res.status(200).json({
+    ok: true,
+    authenticated: true,
+    username,
+    /*
+    * TODO: Include JWT token
+    * token,
+    */
+    /*
+    * TODO: Include password expiry warnings
+    * passwordExpiryWarning: null,
+    */
+  });
 });
 
 export default router;

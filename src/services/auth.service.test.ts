@@ -126,6 +126,8 @@ describe("Auth Service", () => {
       createdAt: "2024-01-01T00:00:00.000Z",
       passwordVersion: 1,
       lastLogin: null,
+      passwordExpiresAt: null,
+      passwordExpiryWarningShown: false,
     };
 
     it("should successfully authenticate a valid user", async () => {

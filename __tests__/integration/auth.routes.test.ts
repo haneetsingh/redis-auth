@@ -63,6 +63,7 @@ describe("Auth Routes Integration", () => {
         .expect(409);
 
       expect(response.body).toEqual({
+        ok: false,
         error: "Username already exists",
         details: { username: ["This username is already taken"] }
       });
@@ -167,6 +168,7 @@ describe("Auth Routes Integration", () => {
         .expect(200);
 
       expect(response.body).toEqual({
+        ok: true,
         authenticated: true,
         username: "testuser"
       });
@@ -186,6 +188,7 @@ describe("Auth Routes Integration", () => {
         .expect(401);
 
       expect(response.body).toEqual({
+        ok: false,
         error: "Invalid username or password"
       });
     });
@@ -202,6 +205,7 @@ describe("Auth Routes Integration", () => {
         .expect(401);
 
       expect(response.body).toEqual({
+        ok: false,
         error: "Account temporarily locked"
       });
     });
@@ -218,6 +222,7 @@ describe("Auth Routes Integration", () => {
         .expect(401);
 
       expect(response.body).toEqual({
+        ok: false,
         error: "Invalid username or password"
       });
     });

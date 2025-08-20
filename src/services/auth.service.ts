@@ -37,6 +37,12 @@ export async function registerUser(username: string, password: string) {
       createdAt: new Date().toISOString(),
       passwordVersion: 1,
       lastLogin: null,
+      /*
+      * TODO: Set password expiry (6 months from creation)
+      * passwordExpiresAt: new Date(Date.now() + (180 * 24 * 60 * 60 * 1000)).toISOString(),
+      */
+      passwordExpiresAt: null,
+      passwordExpiryWarningShown: false,
     };
 
     const setOk = await redis.set(key, JSON.stringify(userRecord), "NX");
@@ -86,7 +92,23 @@ export async function authenticateUser(username: string, password: string) {
     }
 
     await redis.del(failKey(username));
-    return { ok: true, username };
+
+    /*
+    * TODO: Check password expiry and notify user
+    * const expiryInfo = checkPasswordExpiry(user);
+    * if (expiryInfo.expired) {
+    *   return { ok: false, error: "Password expired", requirePasswordChange: true };
+    * }
+    */
+
+    return {
+      ok: true,
+      username
+      /*
+      * TODO: Include password expiry warnings in response
+      * passwordExpiryWarning: expiryInfo.nearExpiry ? expiryInfo.message : null
+      */
+    };
   } catch (error) {
     console.error("Authentication error:", error);
     return { ok: false, error: "Internal server error" };

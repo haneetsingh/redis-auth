@@ -86,6 +86,8 @@ describe("End-to-End Authentication Flow", () => {
         createdAt: "2024-01-01T00:00:00.000Z",
         passwordVersion: 1,
         lastLogin: null,
+        passwordExpiresAt: null,
+        passwordExpiryWarningShown: false,
       };
 
       mockRedis.ttl.mockResolvedValue(-1); // Not locked
@@ -100,6 +102,7 @@ describe("End-to-End Authentication Flow", () => {
         .expect(200);
 
       expect(loginResponse.body).toEqual({
+        ok: true,
         authenticated: true,
         username: "endtoenduser"
       });
@@ -134,6 +137,7 @@ describe("End-to-End Authentication Flow", () => {
         .expect(409);
 
       expect(duplicateResponse.body).toEqual({
+        ok: false,
         error: "Username already exists",
         details: { username: ["This username is already taken"] }
       });
@@ -160,6 +164,8 @@ describe("End-to-End Authentication Flow", () => {
         createdAt: "2024-01-01T00:00:00.000Z",
         passwordVersion: 1,
         lastLogin: null,
+        passwordExpiresAt: null,
+        passwordExpiryWarningShown: false,
       };
 
       // First few failed attempts
@@ -184,6 +190,7 @@ describe("End-to-End Authentication Flow", () => {
         .expect(401);
 
       expect(lockedResponse.body).toEqual({
+        ok: false,
         error: "Account temporarily locked"
       });
     });
@@ -257,6 +264,8 @@ describe("End-to-End Authentication Flow", () => {
         createdAt: "2024-01-01T00:00:00.000Z",
         passwordVersion: 1,
         lastLogin: null,
+        passwordExpiresAt: null,
+        passwordExpiryWarningShown: false,
       };
 
       mockRedis.ttl.mockResolvedValue(-1);

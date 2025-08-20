@@ -29,29 +29,24 @@ A production-ready, secure authentication API built with Node.js, Express, and R
 
 ## Setup
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/your-username/node-redis-auth.git
-   cd node-redis-auth
-   ```
-2. **Install Dependencies:**
+1. **Install Dependencies:**
    ```bash
    npm install
    ```
-3. **Environment Configuration:**
+2. **Environment Configuration:**
    Copy `env.example` to `.env` and configure:
    ```bash
    cp env.example .env
    ```
    Fill in the required environment variables in `.env`.
-4. **Redis Setup:**
+3. **Redis Setup:**
    Ensure Redis is running and accessible.
-5. **Build and Run:**
+4. **Build and Run:**
    ```bash
    npm run build
    npm start
    ```
-6. **Development Mode:**
+5. **Development Mode:**
    ```bash
    npm run dev
    ```
@@ -86,7 +81,7 @@ This project uses Jest for testing.
 
 All endpoints are prefixed with `/v1`.
 
-### `POST /auth/register`
+### `POST /v1/auth/register`
 
 Register a new user.
 
@@ -134,7 +129,7 @@ Register a new user.
   }
   ```
 
-### `POST /auth/login`
+### `POST /v1/auth/login`
 
 Authenticate a user.
 
@@ -213,6 +208,12 @@ This API follows a layered architecture pattern:
 - **Password Reset Functionality**: Secure password reset via email/SMS
 - **Account Management**: User profile updates and account deletion
 - **API Key Management**: Generate and manage API keys for service-to-service auth
+- **Containerization**: Docker support for consistent deployment and development
+  - Multi-stage Dockerfile for optimized production builds
+  - Docker Compose setup with Redis service for local development
+  - Kubernetes manifests for cloud deployment and scaling
+  - Health checks and graceful shutdown handling in containers
+  - Container security best practices and vulnerability scanning
 
 ## Deployment
 
